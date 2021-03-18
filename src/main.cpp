@@ -15,7 +15,8 @@ const int ledPin = 13;
 boolean mouseIsActive = false;
 int lastSwitchState = LOW;
 
-int rangePot = 750;
+int maxPot = 750;
+int minPot = 0;
 int range = 12;
 int responseDelay = 5;
 int threshold = range / 4;
@@ -35,11 +36,11 @@ int readAxis(int thisAxis)
 
   if (thisAxis == PIN_ANALOG_X)
   {
-    reading = map(reading, 0, rangePot, -1 * range, range);
+    reading = map(reading, minPot, maxPot, -1 * range, range);
   }
   else
   {
-    reading = map(reading, 0, rangePot, range, -1 * range);
+    reading = map(reading, minPot, maxPot, range, -1 * range);
   }
 
   int distance = reading - center;
