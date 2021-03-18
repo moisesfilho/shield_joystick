@@ -15,8 +15,11 @@ const int ledPin = 13;
 boolean mouseIsActive = false;
 int lastSwitchState = LOW;
 
+int rangePot = 750;
+int range = 12;
 int responseDelay = 5;
-int range = 10;
+int threshold = range / 4;
+int center = 0;
 
 void setup()
 {
@@ -24,6 +27,29 @@ void setup()
   pinMode(ledPin, OUTPUT);
 
   Mouse.begin();
+}
+
+int readAxis(int thisAxis)
+{
+  int reading = analogRead(thisAxis);
+
+  if (thisAxis == PIN_ANALOG_X)
+  {
+    reading = map(reading, 0, rangePot, -1 * range, range);
+  }
+  else
+  {
+    reading = map(reading, 0, rangePot, range, -1 * range);
+  }
+
+  int distance = reading - center;
+
+  if (abs(distance) < threshold)
+  {
+    distance = 0;
+  }
+
+  return distance;
 }
 
 void loop()
@@ -38,15 +64,15 @@ void loop()
       digitalWrite(ledPin, mouseIsActive);
     }
   }
-  
+
   lastSwitchState = switchState;
 
-  int x = map(analogRead(PIN_ANALOG_X), 0, 750, -1 * range, range);
-  int y = map(analogRead(PIN_ANALOG_Y), 0, 750, range, -1 * range);
+  int axis_x = readAxis(PIN_ANALOG_X);
+  int axis_y = readAxis(PIN_ANALOG_Y);
 
   if (mouseIsActive)
   {
-    Mouse.move(x, y, 0);
+    Mouse.move(axis_x, axis_y, 0);
   }
 
   if (digitalRead(PIN_BUTTON_D) == LOW)
